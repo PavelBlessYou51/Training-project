@@ -1,0 +1,1 @@
+The project to practice QA auto with Selenium and Pytest.
