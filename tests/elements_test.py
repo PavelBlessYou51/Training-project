@@ -1,6 +1,8 @@
 import allure
+import pytest
 
-from pages.elements_page import TextBoxPage, CheckBoxPage
+from pages.elements_page import TextBoxPage, CheckBoxPage, RadioButtonPage
+from selenium.common import TimeoutException
 
 
 @allure.suite('Test of elements')
@@ -27,3 +29,16 @@ class TestElements:
             checked_boxes = check_box_page.collect_titles_of_checked_boxes()
             output = check_box_page.get_output()
             assert checked_boxes == output, "The checked boxes do not match"
+
+    @allure.feature("Test of RadioButton")
+    class TestRadioButton:
+
+        @allure.title('RadioButton Test')
+        @pytest.mark.parametrize('label_button', ['yes', 'impressive', 'no'])
+        def test_radio_button(self, get_driver, label_button):
+            radio_button_page = RadioButtonPage(get_driver, 'https://demoqa.com/radio-button')
+            radio_button_page.open()
+            radio_button_page.click_button(label_button)
+            click_result = radio_button_page.get_result()
+            assert click_result == label_button, f"Wrong '{label_button.upper()}' button result of click"
+
