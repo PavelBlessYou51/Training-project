@@ -11,8 +11,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 @pytest.fixture(scope='module')
 def get_driver() -> WebDriver:
     options = Options()
+    # options.add_argument('--headless')
     options.add_experimental_option("detach", True)
     driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
     driver.maximize_window()
     yield driver
-    # driver.quit()
+    driver.quit()

@@ -1,8 +1,9 @@
+import random
+
 import allure
 import pytest
 
-from pages.elements_page import TextBoxPage, CheckBoxPage, RadioButtonPage
-from selenium.common import TimeoutException
+from pages.elements_page import TextBoxPage, CheckBoxPage, RadioButtonPage, WebTablePage, ButtonsPage
 
 
 @allure.suite('Test of elements')
@@ -42,3 +43,62 @@ class TestElements:
             click_result = radio_button_page.get_result()
             assert click_result == label_button, f"Wrong '{label_button.upper()}' button result of click"
 
+    @allure.feature('Test of WebTable')
+    class TestWebTable:
+
+        @allure.title('Test of adding employee')
+        def test_add_employee(self, get_driver):
+            count_empl_to_add = random.randint(1, 15)
+            web_table_page = WebTablePage(get_driver, 'https://demoqa.com/webtables')
+            web_table_page.open()
+            for i in range(count_empl_to_add):
+                web_table_page.click_add_button()
+                web_table_page.add_employee()
+            count_added_empl = web_table_page.get_count_of_employees()
+            assert count_added_empl == 3 + count_empl_to_add, "Count of emploees doesn't match"
+
+        @allure.title('Count rows testing')
+        def test_count_of_rows(self, get_driver):
+            web_table_page = WebTablePage(get_driver, 'https://demoqa.com/webtables')
+            rows = web_table_page.count_of_rows()
+            assert rows == (10, 5, 100), "Count of rows doesn't match"
+
+        @allure.title('Testing of earch field')
+        def test_search_field(self, get_driver):
+            web_table_page = WebTablePage(get_driver, 'https://demoqa.com/webtables')
+            before, after = web_table_page.search_employee()
+            assert before == after, "Last name doesn't match"
+
+        @allure.title('Testing of edit employee')
+        def test_edit_employee(self, get_driver):
+            web_table_page = WebTablePage(get_driver, 'https://demoqa.com/webtables')
+            new_salary, current_salary = web_table_page.edit_eployee()
+            assert new_salary == current_salary, "Salary name doesn't match"
+
+        @allure.title('Testing of delete employee')
+        def test_delete_employee(self, get_driver):
+            web_table_page = WebTablePage(get_driver, 'https://demoqa.com/webtables')
+            result = web_table_page.delete_all_employee()
+            assert result == 'No rows found', "Employees weren't been deleted"
+
+    @allure.feature('Test of buttons')
+    class TestButtons:
+
+        @allure.title('Testing of double click')
+        def test_double_click(self, get_driver):
+            buttons_page = ButtonsPage(get_driver, 'https://demoqa.com/buttons')
+            buttons_page.open()
+            result = buttons_page.double_click()
+            assert result == 'You have done a double click', "The double click hasn't been perform"
+
+        @allure.title('Testing of right click')
+        def test_right_click(self, get_driver):
+            buttons_page = ButtonsPage(get_driver, 'https://demoqa.com/buttons')
+            result = buttons_page.right_click()
+            assert result == 'You have done a right click', "The right click hasn't been perform"
+
+        @allure.title('Testing of simple click')
+        def test_simple_click(self, get_driver):
+            buttons_page = ButtonsPage(get_driver, 'https://demoqa.com/buttons')
+            result = buttons_page.simple_click()
+            assert result == 'You have done a dynamic click', "The simple click hasn't been perform"
