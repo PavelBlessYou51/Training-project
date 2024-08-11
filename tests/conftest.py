@@ -17,3 +17,11 @@ def get_driver() -> WebDriver:
     driver.maximize_window()
     yield driver
     driver.quit()
+
+
+@pytest.fixture(scope='function',
+                params=[('created', 'Created'), ('no-content', 'No Content'), ('moved', 'Moved Permanently'),
+                        ('bad_request', 'Bad Request'), ('fordidden', 'Forbidden'), ('not_found', 'Not Found')])
+def get_response_type_and_answer(request):
+    data = request.param
+    return data

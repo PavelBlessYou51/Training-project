@@ -1,9 +1,10 @@
 import random
+import time
 
 import allure
 import pytest
 
-from pages.elements_page import TextBoxPage, CheckBoxPage, RadioButtonPage, WebTablePage, ButtonsPage
+from pages.elements_page import TextBoxPage, CheckBoxPage, RadioButtonPage, WebTablePage, ButtonsPage, LinksPage
 
 
 @allure.suite('Test of elements')
@@ -102,3 +103,21 @@ class TestElements:
             buttons_page = ButtonsPage(get_driver, 'https://demoqa.com/buttons')
             result = buttons_page.simple_click()
             assert result == 'You have done a dynamic click', "The simple click hasn't been perform"
+
+    @allure.feature('Test of links')
+    class TestLinksPage:
+
+        @allure.title('Testing static and dynamic links')
+        @pytest.mark.parametrize('type_link', ['static', 'dynamic'])
+        def test_links(self, get_driver, type_link):
+            links_page = LinksPage(get_driver, 'https://demoqa.com/links')
+            links_page.open()
+            link_to_go, current_link = links_page.open_links(type_link)
+            assert link_to_go == current_link, "Frong link"
+
+        @allure.title('Testing api links')
+        def test_api_links(self, get_driver, get_response_type_and_answer):
+            links_page = LinksPage(get_driver)
+            response_type, answer = get_response_type_and_answer
+            result = links_page.use_api_links(response_type, answer)
+            assert result, "Frong response"
