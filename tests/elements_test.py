@@ -1,10 +1,11 @@
+import os.path
 import random
-import time
 
 import allure
 import pytest
 
-from pages.elements_page import TextBoxPage, CheckBoxPage, RadioButtonPage, WebTablePage, ButtonsPage, LinksPage
+from pages.elements_page import TextBoxPage, CheckBoxPage, RadioButtonPage, WebTablePage, ButtonsPage, LinksPage, \
+    ImagesPage
 
 
 @allure.suite('Test of elements')
@@ -121,3 +122,13 @@ class TestElements:
             response_type, answer = get_response_type_and_answer
             result = links_page.use_api_links(response_type, answer)
             assert result, "Frong response"
+
+    class TestImagesPage:
+
+        def test_visible_image(self, get_driver):
+            images_page = ImagesPage(get_driver, 'https://demoqa.com/broken')
+            images_page.open()
+            screen_path = images_page.make_screen()
+            image_path = images_page.get_image()
+            assert os.path.isfile(screen_path), "The screen hasn't been done"
+            assert os.path.isfile(image_path), "The image hasn't been saved"

@@ -25,3 +25,4 @@ def get_driver() -> WebDriver:
 def get_response_type_and_answer(request):
     data = request.param
     return data
+
