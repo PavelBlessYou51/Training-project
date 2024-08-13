@@ -5,7 +5,7 @@ import allure
 import pytest
 
 from pages.elements_page import TextBoxPage, CheckBoxPage, RadioButtonPage, WebTablePage, ButtonsPage, LinksPage, \
-    ImagesPage
+    ImagesPage, UploadDownloadPage
 
 
 @allure.suite('Test of elements')
@@ -116,15 +116,16 @@ class TestElements:
             link_to_go, current_link = links_page.open_links(type_link)
             assert link_to_go == current_link, "Frong link"
 
-        @allure.title('Testing api links')
+        @allure.title('Testing of api links')
         def test_api_links(self, get_driver, get_response_type_and_answer):
             links_page = LinksPage(get_driver)
             response_type, answer = get_response_type_and_answer
             result = links_page.use_api_links(response_type, answer)
             assert result, "Frong response"
 
+    @allure.feature('Test of images')
     class TestImagesPage:
-
+        @allure.title('Testing of images')
         def test_visible_image(self, get_driver):
             images_page = ImagesPage(get_driver, 'https://demoqa.com/broken')
             images_page.open()
@@ -132,3 +133,19 @@ class TestElements:
             image_path = images_page.get_image()
             assert os.path.isfile(screen_path), "The screen hasn't been done"
             assert os.path.isfile(image_path), "The image hasn't been saved"
+
+    @allure.feature('Test of up and downloading')
+    class TestUploadDownloadFile:
+
+        @allure.title('Testing of download')
+        def test_download_file(self, get_driver):
+            up_down_load_page = UploadDownloadPage(get_driver, 'https://demoqa.com/upload-download')
+            up_down_load_page.open()
+            image_path = up_down_load_page.download_file()
+            assert os.path.isfile(image_path)
+
+        @allure.title('Testing of upload')
+        def test_upload_file(self, get_driver):
+            up_down_load_page = UploadDownloadPage(get_driver)
+            result = up_down_load_page.upload_file()
+            assert result == 'pytest.ini', "The file wasn't been uploaded"
