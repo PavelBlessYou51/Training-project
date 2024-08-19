@@ -5,7 +5,7 @@ import allure
 import pytest
 
 from pages.elements_page import TextBoxPage, CheckBoxPage, RadioButtonPage, WebTablePage, ButtonsPage, LinksPage, \
-    ImagesPage, UploadDownloadPage
+    ImagesPage, UploadDownloadPage, DynamicPage
 
 
 @allure.suite('Test of elements')
@@ -149,3 +149,29 @@ class TestElements:
             up_down_load_page = UploadDownloadPage(get_driver)
             result = up_down_load_page.upload_file()
             assert result == 'pytest.ini', "The file wasn't been uploaded"
+
+    @allure.feature('Test of dynamic elements')
+    class TestDynamicPage:
+
+        @allure.title('Testing dynamic ID')
+        def test_dynamic_id(self, get_driver):
+            dynamic_page = DynamicPage(get_driver, 'https://demoqa.com/dynamic-properties')
+            dynamic_page.open()
+            first_id = dynamic_page.get_random_id()
+            get_driver.refresh()
+            second_id = dynamic_page.get_random_id()
+            assert first_id != second_id
+
+        @allure.title('Testing enable button')
+        def test_enable_after_five_sec_button(self, get_driver):
+            dynamic_page = DynamicPage(get_driver)
+            result = dynamic_page.click_enable_button()
+            assert result
+
+        @allure.title('Testing color of button')
+        def test_button_color(self, get_driver):
+            dynamic_page = DynamicPage(get_driver)
+            result = dynamic_page.get_color()
+            assert result == '#dc3545'
+
+

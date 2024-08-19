@@ -90,3 +90,16 @@ class LinksPageLocators:
 
 class ImagesPageLocators:
     IMAGE = (By.XPATH, "(//img)[3]")
+
+
+class UploadDownloadPageLocators:
+    DOWNLOAD = (By.CSS_SELECTOR, "#downloadButton")
+    UPLOAD = (By.CSS_SELECTOR, "#uploadFile")
+    UPLOAD_FILE = (By.CSS_SELECTOR, "#uploadedFilePath")
+
+
+class DynamicPageLocators:
+    RANDOM_ID = (By.XPATH, "//p[contains(text(),'This text has random Id')]")
+    ENABLE_FIVE_SEC = (By.CSS_SELECTOR, "#enableAfter")
+    COLOR_BUTTON = (By.CSS_SELECTOR, "#colorChange")
+    VISIBLE_AFTER = (By.CSS_SELECTOR, "#visibleAfter")

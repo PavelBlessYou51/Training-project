@@ -1,18 +1,19 @@
 """The module contains classes for working with WebElements"""
+import base64
 import datetime
-import os
 import random
-import requests
 
 import allure
+import requests
 from selenium.common import TimeoutException, StaleElementReferenceException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.color import Color
 
 from generator.data_generator import create_person, string_handler
 from locators.element_locators import TextBoxPageLocators, CheckBoxPageLoactors, RadioButtonLocators, WebTableLocators, \
-    ButtonsPageLocators, LinksPageLocators, ImagesPageLocators
+    ButtonsPageLocators, LinksPageLocators, ImagesPageLocators, UploadDownloadPageLocators, DynamicPageLocators
 from pages.base_page import BasePage
 
 
@@ -169,6 +170,7 @@ class WebTablePage(BasePage):
         hundred_rows = len(self.elements_are_visible(self.LOCATORS.FIELDS)) - 1
         return current_count_rows, five_rows, hundred_rows
 
+    @allure.step('Seaching employee')
     def search_employee(self):
         with allure.step('Get count of employees before searching and random last name'):
             select_element = self.element_is_visible(self.LOCATORS.SELECT_ROWS)
@@ -184,6 +186,7 @@ class WebTablePage(BasePage):
             last_name_after = employees_after[0].find_element(By.XPATH, "(//div[@class='rt-td'])[2]").text
         return last_name_before, last_name_after
 
+    @allure.step('Editing employee')
     def edit_eployee(self) -> tuple[str, str]:
         new_salary = '1000000'
         with allure.step('Getting random employee to edit'):
@@ -201,6 +204,7 @@ class WebTablePage(BasePage):
             current_salary = random_employee.find_element(By.XPATH, './/div[5]').text
         return new_salary, current_salary
 
+    @allure.step('Deleting employee')
     def delete_all_employee(self) -> str:
         employees = self.elements_are_visible(self.LOCATORS.FILLED_FIELDS)
         with allure.step('Delete all employees'):
@@ -218,6 +222,7 @@ class WebTablePage(BasePage):
 class ButtonsPage(BasePage):
     LOCATORS = ButtonsPageLocators()
 
+    @allure.step('Double click')
     def double_click(self) -> str:
         with allure.step('Double click on te button'):
             button = self.element_is_clickable(self.LOCATORS.DOUBLE_CLICK)
@@ -229,6 +234,7 @@ class ButtonsPage(BasePage):
             message = element.text
             return message
 
+    @allure.step('Right click')
     def right_click(self) -> str:
         with allure.step('Right click on te button'):
             button = self.element_is_clickable(self.LOCATORS.RIGHT_CLICK)
@@ -240,6 +246,7 @@ class ButtonsPage(BasePage):
             message = element.text
             return message
 
+    @allure.step('Simple click')
     def simple_click(self) -> str:
         with allure.step('Simple click on te button'):
             button = self.element_is_clickable(self.LOCATORS.CLICK)
@@ -253,6 +260,7 @@ class ButtonsPage(BasePage):
 class LinksPage(BasePage):
     LOCATORS = LinksPageLocators()
 
+    @allure.step('Opening link')
     def open_links(self, link_type) -> tuple[str, str]:
         with allure.step('Creating the dict with locators'):
             links_dict = {
@@ -272,6 +280,7 @@ class LinksPage(BasePage):
             self.driver.switch_to.window(current_window)
         return link_url, new_tab_url
 
+    @allure.step('Using api links')
     def use_api_links(self, response_type, answer) -> bool:
         with allure.step('Creating the dict with locators'):
             request_dict = {
@@ -294,25 +303,77 @@ class LinksPage(BasePage):
 class ImagesPage(BasePage):
     LOCATORS = ImagesPageLocators()
 
+    @allure.step('Making screen')
     def make_screen(self) -> str:
-        self.element_is_visible(self.LOCATORS.IMAGE)
-        screen_name = 'screen' + f'-{datetime.date.today()}' + '.png'
-        screen_path = os.getcwd().rsplit('\\', 1)[0] + r'\screenshots'
-        os.makedirs(screen_path, exist_ok=True)
-        path = screen_path + '\\' + screen_name
+        with allure.step("Create file name and path to save"):
+            self.element_is_visible(self.LOCATORS.IMAGE)
+            screen_name = 'screen' + f'-{datetime.date.today()}' + '.png'
+            screen_path = self.get_root_dir() + r'\screenshots'
+            path = screen_path + '\\' + screen_name
         self.get_screen_shot(path)
         return path
 
+    @allure.step('Getting image')
     def get_image(self) -> str:
-        element = self.element_is_visible(self.LOCATORS.IMAGE)
-        url = element.get_attribute('src')
-        response = requests.get(url)
-        image_path = os.getcwd().rsplit('\\', 1)[0] + r'\images'
-        image_name = 'image' + f'-{datetime.date.today()}' + '.jpg'
-        os.makedirs(image_path, exist_ok=True)
-        path = image_path + '\\' + image_name
+        with allure.step("Getting target resource"):
+            element = self.element_is_visible(self.LOCATORS.IMAGE)
+            url = element.get_attribute('src')
+            response = requests.get(url)
+        with allure.step("Create file name and path to save"):
+            image_name = 'image' + f'-{datetime.date.today()}' + '.jpg'
+            image_path = self.get_root_dir() + r'\images'
+            path = image_path + '\\' + image_name
         with open(path, 'wb') as img_file:
             img_file.write(response.content)
         return path
 
 
+class UploadDownloadPage(BasePage):
+    LOCATORS = UploadDownloadPageLocators()
+
+    @allure.step('Download file')
+    def download_file(self) -> str:
+        with allure.step("Getting target resource"):
+            element = self.element_is_clickable(self.LOCATORS.DOWNLOAD)
+            file_base64 = element.get_attribute('href')
+            file_b = base64.b64decode(file_base64)
+        with allure.step("Create file name and path to save"):
+            image_name = 'download_image' + f'-{datetime.date.today()}' + '.jpg'
+            image_path = self.get_root_dir() + r'\images'
+            path = image_path + '\\' + image_name
+        with open(path, 'wb') as img_file:
+            offset = file_b.find(b'\xff\xd8')
+            img_file.write(file_b[offset:])
+        return path
+
+    @allure.step('Upload file')
+    def upload_file(self) -> str:
+        upload_button = self.element_is_clickable(self.LOCATORS.UPLOAD)
+        file = self.get_root_dir() + r'\pytest.ini'
+        upload_button.send_keys(file)
+        uploaded_file = self.element_is_visible(self.LOCATORS.UPLOAD_FILE)
+        uploaded_file_name = uploaded_file.text.rsplit('\\', 1)[-1]
+        return uploaded_file_name
+
+
+class DynamicPage(BasePage):
+    LOCATORS = DynamicPageLocators()
+
+    @allure.step("Getting random ID")
+    def get_random_id(self) -> str:
+        element = self.element_is_presents(self.LOCATORS.RANDOM_ID)
+        random_id = element.get_attribute('id')
+        return random_id
+
+    @allure.step('Click on enable button after five 5')
+    def click_enable_button(self) -> bool:
+        element = self.element_is_clickable(self.LOCATORS.ENABLE_FIVE_SEC)
+        result = element.is_enabled()
+        return result
+
+    @allure.step('Getting color from element')
+    def get_color(self):
+        element = self.element_is_clickable(self.LOCATORS.COLOR_BUTTON)
+        elem_color = element.value_of_css_property('color')
+        color = Color.from_string(elem_color).hex
+        return color

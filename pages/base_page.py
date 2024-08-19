@@ -46,3 +46,7 @@ class BasePage:
     def get_screen_shot(self, path) -> None:
         self.driver.get_screenshot_as_file(path)
 
+    def get_root_dir(self) -> str:
+        root_dir = os.getcwd().rsplit('\\', 1)[0]
+        os.makedirs(root_dir, exist_ok=True)
+        return root_dir
