@@ -10,3 +10,4 @@ class Person:
     age: str = None
     salary: str = None
     department: str = None
+    phone_number: str = None

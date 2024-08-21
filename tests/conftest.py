@@ -16,7 +16,7 @@ def get_driver() -> WebDriver:
     driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
     driver.maximize_window()
     yield driver
-    driver.quit()
+    # driver.quit()
 
 
 @pytest.fixture(scope='function',

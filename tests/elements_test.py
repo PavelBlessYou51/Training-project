@@ -1,3 +1,4 @@
+"""The module contains test of elements"""
 import os.path
 import random
 
