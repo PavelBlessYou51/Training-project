@@ -1,6 +1,5 @@
 """The module contains classes for working with Form"""
 import os
-import random
 
 import allure
 from selenium.webdriver import Keys
