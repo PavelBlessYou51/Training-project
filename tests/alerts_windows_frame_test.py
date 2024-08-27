@@ -1,3 +1,4 @@
+"""The module contains test of Alerts, Windows and Frames"""
 import allure
 import pytest
 
@@ -8,7 +9,7 @@ class TestAlertsWindowsFrames:
     @allure.feature('Test of new tab and window')
     class TestBrowserWindows:
 
-        @allure.title('Tab and windows test')
+        @allure.title('Tab and windows testing')
         @pytest.mark.parametrize('button_type', ['tab', 'window'])
         def test_new_tab_or_window(self, get_driver, button_type):
             browser_page = BrowserWindowPage(get_driver, 'https://demoqa.com/browser-windows')
