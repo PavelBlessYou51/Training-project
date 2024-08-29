@@ -40,6 +40,8 @@ class TestElements:
         @allure.title('RadioButton Test')
         @pytest.mark.parametrize('label_button', ['yes', 'impressive', 'no'])
         def test_radio_button(self, get_driver, label_button):
+            if label_button == 'no':
+                pytest.xfail('"No" button is not active')
             radio_button_page = RadioButtonPage(get_driver, 'https://demoqa.com/radio-button')
             radio_button_page.open()
             radio_button_page.click_button(label_button)

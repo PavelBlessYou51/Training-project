@@ -1,6 +1,7 @@
 """The module contains basic methods for working with pages of site"""
 import os
 
+from selenium.webdriver import ActionChains
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -50,3 +51,13 @@ class BasePage:
         root_dir = os.getcwd().rsplit('\\', 1)[0]
         os.makedirs(root_dir, exist_ok=True)
         return root_dir
+
+    def action_drag_and_drop(self, source: WebElement, target: WebElement):
+        action = ActionChains(self.driver)
+        action.drag_and_drop(source, target)
+        action.perform()
+
+    def get_items_with_titles(self, locator: tuple[str, str]) -> tuple[list[WebElement], list[str]]:
+        elements = self.elements_are_visible(locator)
+        title_elements = [elem.text for elem in elements]
+        return elements, title_elements
